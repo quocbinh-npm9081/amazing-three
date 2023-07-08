@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"; // module cho phép camera quay quanh vật thể trong khoản cách nhất định
-
+import * as datGUI from "dat.gui"; //giao diện đồ học đơn giản
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
@@ -24,13 +24,41 @@ orbit.update(); //Cập nhập lại khung hình khi camera thay đổi quỹ đ
 
 // camera.position.z = 5; // đặt vị trí của camera theo trục Z
 // camera.position.y = 2; // đặt vị trí của camera theo trục Y
-camera.position.set(1, 2, 5);
+camera.position.set(-10, 30, 30);
 
-//Tạo 1 BOX (vật thể 3D)
+//Tạo 1 BOX (vật thể hình hộp)
 const BoxGeometry = new THREE.BoxGeometry(1, 1, 1);
 const BoxMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 }); // Đặt vật liệu cho BOX
 const cube = new THREE.Mesh(BoxGeometry, BoxMaterial);
 scene.add(cube);
+
+//Tạo 1 quả cầu
+const sphereGeometry = new THREE.SphereGeometry(4, 64, 32);
+const sphereMaterial = new THREE.MeshBasicMaterial({
+  color: "#049ef4",
+  wireframe: true, //wireframe là hiện khung xương, ta sẽ thấy các vật thể bên trong
+});
+const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+sphere.position.set(10, 10, 0);
+
+scene.add(sphere);
+
+//Tạo 1 mặt phẳng
+const planeGeometry = new THREE.PlaneGeometry(30, 30);
+const planeMaterial = new THREE.MeshBasicMaterial({
+  color: 0xffffff,
+  side: THREE.DoubleSide, //khiến cho mặt phảng được phủ chất liệu ở cả 2 mặt
+});
+const plane = new THREE.Mesh(planeGeometry, planeMaterial);
+plane.rotation.x = -0.5 * Math.PI; // đặt mặt phảng nằm ngang đúng vị trí
+scene.add(plane);
+
+//Taọ lưới hỗ trợ đo đạc
+const size = 10;
+const divisions = 10;
+//const gridHelper = new THREE.GridHelper(size, divisions); //kích thước (10) được chia làm 10 phần
+const gridHelper = new THREE.GridHelper(30); //kích thước 30 bằng kích thước của mặt phẳng (planeGeometry)
+scene.add(gridHelper);
 
 //xoay cho Box quay
 cube.rotation.x = 10;
