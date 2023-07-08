@@ -1,7 +1,8 @@
 import * as THREE from "three";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"; // module cho phép camera quay quanh vật thể trong khoản cách nhất định
+
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
-
 document.body.appendChild(renderer.domElement);
 
 // tao camera
@@ -13,9 +14,13 @@ const camera = new THREE.PerspectiveCamera(
   1000 //far — Camera frustum far plane.
 );
 
+//Tạo thể hiện của Quỹ đạo Camera
+const orbit = new OrbitControls(camera, renderer.domElement);
+
 //Tao hệ trục tọa độ
 const axesHelper = new THREE.AxesHelper(5); // 5 đại diện cho chiều dài của hệ trục xyz
 scene.add(axesHelper);
+orbit.update(); //Cập nhập lại khung hình khi camera thay đổi quỹ đạo
 
 // camera.position.z = 5; // đặt vị trí của camera theo trục Z
 // camera.position.y = 2; // đặt vị trí của camera theo trục Y
