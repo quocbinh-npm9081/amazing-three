@@ -83,6 +83,16 @@ cube.rotation.y = 6;
 //Taọ môi  trường ánh sáng xung quanh( ánh sánh xung quanh tác động đến các đối tượng là như nhau và không thể tạo bóng vì nó không có hướng)
 const ambientLight = new THREE.AmbientLight(0x333333);
 scene.add(ambientLight);
+//Xác định hướng màu và độ tương phản của ánh sáng
+const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
+directionalLight.position.set(-30, 40, 0);
+
+scene.add(directionalLight);
+//Khởi tạo đối tượng nguồn sáng, ta có thể duy chuyển nguồn sáng để tạo bóng, phải có đối tương Helper mới có thể điều chỉnh vị trí nguồn sáng được(directionalLight.position.set(-30, 40, 0);)
+const directionalLightHelper = new THREE.DirectionalLightHelper(
+  directionalLight
+);
+scene.add(directionalLightHelper);
 
 //tạo hành động nhảy lên cho sphere(khối cầu)
 let step = 0;
