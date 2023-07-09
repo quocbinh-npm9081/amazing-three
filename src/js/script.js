@@ -43,6 +43,22 @@ sphere.position.set(10, 10, 0);
 
 scene.add(sphere);
 
+//config GUI
+const gui = new datGUI.GUI();
+const options = {
+  sphereColor: "#ffea00",
+  wireframe: false,
+  speed: 0.01,
+};
+
+gui.addColor(options, "sphereColor").onChange(function (e) {
+  sphere.material.color.set(e);
+});
+gui.add(options, "wireframe").onChange(function (e) {
+  sphere.material.wireframe = e;
+});
+gui.add(options, "speed", 0, 0.1);
+
 //Tạo 1 mặt phẳng
 const planeGeometry = new THREE.PlaneGeometry(30, 30);
 const planeMaterial = new THREE.MeshBasicMaterial({
@@ -64,10 +80,15 @@ scene.add(gridHelper);
 cube.rotation.x = 10;
 cube.rotation.y = 6;
 
+//tạo hành động nhảy lên cho sphere(khối cầu)
+let step = 0;
+
 //Tạo 1 hàm xoay theo thời gian
 function animation(time) {
   cube.rotation.x = time / 1000; // xoay theo thời gian
   cube.rotation.y = time / 1000;
+  step += options.speed;
+  sphere.position.y = 10 * Math.abs(Math.sin(step)); //Math.abs() lấy giá trị tuyệt đối - Math.sin()// [-1,1]
   renderer.render(scene, camera);
 }
 
