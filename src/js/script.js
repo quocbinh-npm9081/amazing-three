@@ -90,7 +90,7 @@ const cubeTexture = new THREE.Mesh(Box2Geometry, Box2MultiMaterial);
 cubeTexture.castShadow = true;
 //cubeTexture.material.map = textureLoader.load([wp4247401]); // hình hộp có background là wp4247401.jpg đây là 1 cách không mà không cần thông qua constructor
 cubeTexture.position.set(0, 10, 10);
-
+cubeTexture.name = "theBox"; //đặt tên cho cude
 scene.add(cubeTexture);
 
 //Tạo 1 quả cầu
@@ -100,6 +100,7 @@ const sphereMaterial = new THREE.MeshStandardMaterial({
   wireframe: true, //wireframe là hiện khung xương, ta sẽ thấy các vật thể bên trong
 });
 const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+const sphereID = sphere.id;
 sphere.position.set(3, 10, 0);
 sphere.castShadow = true; //Hình cấu là nguồn tạo bóng xuống mặt phẳng
 scene.add(sphere);
@@ -161,6 +162,17 @@ scene.add(spotLightHelper);
 //scene.fog = new THREE.Fog(0xcccccc, 1, 100);
 scene.fog = new THREE.FogExp2(0xcccccc, 0.01); // hiệu ứng này giông thật hơn hiệu ứng bên trên
 
+//bắt sự kiện khi di chuột lên phần tử
+const raycaster = new THREE.Raycaster();
+const mousePointer = new THREE.Vector2();
+window.addEventListener("mousemove", function (event) {
+  // calculate pointer position in normalized device coordinates
+  // (-1 to +1) for both components
+  //lấy tọa độ chuột trong không gian màn hình và chuyển đổi thành tọa độ chuẩn hóa trong khoảng từ -1 đến 1.
+  mousePointer.x = (event.clientX / window.innerWidth) * 2 - 1;
+  mousePointer.y = -(event.clientY / window.innerHeight) * 2 + 1;
+});
+
 //tạo hành động nhảy lên cho sphere(khối cầu)
 let step = 0;
 //Tạo 1 hàm xoay theo thời gian
@@ -175,7 +187,18 @@ function animation(time) {
   spotLight.penumbra = options.penumbra;
   spotLight.intensity = options.intensity;
   spotLightHelper.update();
+  raycaster.setFromCamera(mousePointer, camera); //Đây là cách để thiết lập tia (ray) từ tọa độ chuẩn hóa của con trỏ chuột (pointer) đến camera
+  const intersects = raycaster.intersectObjects(scene.children); //Đây là cách để kiểm tra va chạm giữa tia và các đối tượng trong scene.
+  for (let i = 0; i < intersects.length; i++) {
+    if (intersects[i].object.id === sphereID)
+      intersects[i].object.material.color.set(0xff0000);
+    if (intersects[i].object.name === "theBox") {
+      console.log("intersects: ", intersects[i]);
 
+      intersects[i].object.rotation.x = time / 1000;
+      intersects[i].object.rotation.y = time / 1000;
+    }
+  }
   renderer.render(scene, camera);
 }
 
