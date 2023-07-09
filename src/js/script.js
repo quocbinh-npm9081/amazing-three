@@ -1,13 +1,30 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"; // module cho phép camera quay quanh vật thể trong khoản cách nhất định
 import * as datGUI from "dat.gui"; //giao diện đồ học đơn giản
+import wp4247401 from "../images/wp4247401.jpg";
+import wp4575206 from "../images/wp4575206.jpg";
+
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
+//renderer.setClearColor(0xffea00); // config màu cho phông xanh
 renderer.shadowMap.enabled = true; // cho phép đổ bóng
 document.body.appendChild(renderer.domElement);
 
-// tao camera
+// tạo camera
 const scene = new THREE.Scene();
+//Trường hợp muốn sử dụng ảnh(backgroundf1) làm nền cho background thì ta phải thông qua qua đối tượng Loader để tải ảnh
+//const textureLoader = new THREE.TextureLoader();
+//scene.background = textureLoader.load(wp4247401); //thêm kết cấu cho cảnh
+const cubeTextureLoader = new THREE.CubeTextureLoader(); // tạo 1 cái hộp 6 mặt bao chùm lấy toàn cảnh
+scene.background = cubeTextureLoader.load([
+  //chỉ nhận các ảnh có kích thước bằng nhau (tùy vào cấu hình của máy tính mà threejs sẽ giới hạn chất lượng, bạn không thể đưa ảnh 4k cho máy tính có độ phân giải thấp, hãy tìm cách tối ưu khác )
+  wp4247401,
+  wp4575206,
+  wp4247401,
+  wp4247401,
+  wp4575206,
+  wp4575206,
+]);
 const camera = new THREE.PerspectiveCamera(
   75, //fov — Camera frustum vertical field of view.
   window.innerWidth / window.innerHeight, //aspect — Camera frustum aspect ratio.
@@ -22,7 +39,6 @@ const orbit = new OrbitControls(camera, renderer.domElement);
 const axesHelper = new THREE.AxesHelper(5); // 5 đại diện cho chiều dài của hệ trục xyz
 scene.add(axesHelper);
 orbit.update(); //Cập nhập lại khung hình khi camera thay đổi quỹ đạo
-
 // camera.position.z = 5; // đặt vị trí của camera theo trục Z
 // camera.position.y = 2; // đặt vị trí của camera theo trục Y
 camera.position.set(-10, 30, 30);
@@ -74,7 +90,6 @@ const planeMaterial = new THREE.MeshStandardMaterial({
 });
 const plane = new THREE.Mesh(planeGeometry, planeMaterial);
 plane.rotation.x = -0.5 * Math.PI; // đặt mặt phảng nằm ngang đúng vị trí
-
 plane.receiveShadow = true; //Mặt phẳng là nơi nhận bóng(shadow) từ hình cầu
 scene.add(plane);
 
@@ -119,6 +134,10 @@ scene.add(spotLight);
 //Camera hỗ trợ đỗ bóng, helper naỳ bẽ cho ta các đường sáng , giúp điều chỉnh ánh sáng trực quang hơn
 const spotLightHelper = new THREE.SpotLightHelper(spotLight);
 scene.add(spotLightHelper);
+
+//Tạo hiệu ứng sương mù( di chuyển camera đi xa khung hình sẽ làm khung hình mờ dần đi)
+//scene.fog = new THREE.Fog(0xcccccc, 1, 100);
+scene.fog = new THREE.FogExp2(0xcccccc, 0.01); // hiệu ứng này giông thật hơn hiệu ứng bên trên
 
 //tạo hành động nhảy lên cho sphere(khối cầu)
 let step = 0;
