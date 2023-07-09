@@ -34,7 +34,7 @@ scene.add(cube);
 
 //Tạo 1 quả cầu
 const sphereGeometry = new THREE.SphereGeometry(4, 64, 32);
-const sphereMaterial = new THREE.MeshBasicMaterial({
+const sphereMaterial = new THREE.MeshStandardMaterial({
   color: "#049ef4",
   wireframe: true, //wireframe là hiện khung xương, ta sẽ thấy các vật thể bên trong
 });
@@ -47,7 +47,7 @@ scene.add(sphere);
 const gui = new datGUI.GUI();
 const options = {
   sphereColor: "#ffea00",
-  wireframe: false,
+  wireframe: true,
   speed: 0.01,
 };
 
@@ -61,7 +61,7 @@ gui.add(options, "speed", 0, 0.1);
 
 //Tạo 1 mặt phẳng
 const planeGeometry = new THREE.PlaneGeometry(30, 30);
-const planeMaterial = new THREE.MeshBasicMaterial({
+const planeMaterial = new THREE.MeshStandardMaterial({
   color: 0xffffff,
   side: THREE.DoubleSide, //khiến cho mặt phảng được phủ chất liệu ở cả 2 mặt
 });
@@ -79,6 +79,10 @@ scene.add(gridHelper);
 //xoay cho Box quay
 cube.rotation.x = 10;
 cube.rotation.y = 6;
+
+//Taọ môi  trường ánh sáng xung quanh( ánh sánh xung quanh tác động đến các đối tượng là như nhau và không thể tạo bóng vì nó không có hướng)
+const ambientLight = new THREE.AmbientLight(0x333333);
+scene.add(ambientLight);
 
 //tạo hành động nhảy lên cho sphere(khối cầu)
 let step = 0;
