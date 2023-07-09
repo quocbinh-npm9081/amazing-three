@@ -13,7 +13,7 @@ document.body.appendChild(renderer.domElement);
 // tạo camera
 const scene = new THREE.Scene();
 //Trường hợp muốn sử dụng ảnh(backgroundf1) làm nền cho background thì ta phải thông qua qua đối tượng Loader để tải ảnh
-//const textureLoader = new THREE.TextureLoader();
+const textureLoader = new THREE.TextureLoader();
 //scene.background = textureLoader.load(wp4247401); //thêm kết cấu cho cảnh
 const cubeTextureLoader = new THREE.CubeTextureLoader(); // tạo 1 cái hộp 6 mặt bao chùm lấy toàn cảnh
 scene.background = cubeTextureLoader.load([
@@ -50,7 +50,7 @@ const options = {
   wireframe: true,
   speed: 0.01,
   angle: 0.1, // góc tới của anh sáng
-  penumbra: 0,
+  penumbra: 0.01,
   intensity: 1, // cường độ ánh sáng
 };
 
@@ -65,11 +65,33 @@ gui.add(options, "angle", 0, 0.3);
 gui.add(options, "penumbra", 0, 0.3);
 gui.add(options, "intensity", 0, 0.3);
 
-//Tạo 1 BOX (vật thể hình hộp)
+//Tạo 1 BOX  (vật thể hình hộp)
 const BoxGeometry = new THREE.BoxGeometry(1, 1, 1);
 const BoxMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 }); // Đặt vật liệu cho BOX
 const cube = new THREE.Mesh(BoxGeometry, BoxMaterial);
 scene.add(cube);
+
+//Tạo 1 Box làm có bối cảnh các mặt là cách hình nền,có 6 mặt hình anh khác nhau
+const Box2MultiMaterial = [
+  //tao 6 vật liệu khách nhau cho 6 mặt của hộp
+  new THREE.MeshBasicMaterial({ map: textureLoader.load(wp4247401) }),
+  new THREE.MeshBasicMaterial({ map: textureLoader.load(wp4247401) }),
+  new THREE.MeshBasicMaterial({ map: textureLoader.load(wp4247401) }),
+  new THREE.MeshBasicMaterial({ map: textureLoader.load(wp4575206) }),
+  new THREE.MeshBasicMaterial({ map: textureLoader.load(wp4575206) }),
+  new THREE.MeshBasicMaterial({ map: textureLoader.load(wp4575206) }),
+];
+const Box2Geometry = new THREE.BoxGeometry(4, 5, 4);
+//const Box2Material = new THREE.MeshBasicMaterial({ trường hợp muốn 6 mặt có chung 1 vật liệu
+// color: 0x00ff00,
+//map: textureLoader.load([wp4247401]), // hình hộp có background là wp4247401.jpg
+//}); // Đặt vật liệu cho BOX
+const cubeTexture = new THREE.Mesh(Box2Geometry, Box2MultiMaterial);
+cubeTexture.castShadow = true;
+//cubeTexture.material.map = textureLoader.load([wp4247401]); // hình hộp có background là wp4247401.jpg đây là 1 cách không mà không cần thông qua constructor
+cubeTexture.position.set(0, 10, 10);
+
+scene.add(cubeTexture);
 
 //Tạo 1 quả cầu
 const sphereGeometry = new THREE.SphereGeometry(4, 64, 32);
