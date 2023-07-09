@@ -33,6 +33,9 @@ const options = {
   sphereColor: "#ffea00",
   wireframe: true,
   speed: 0.01,
+  angle: 0.1, // góc tới của anh sáng
+  penumbra: 0,
+  intensity: 1, // cường độ ánh sáng
 };
 
 gui.addColor(options, "sphereColor").onChange(function (e) {
@@ -42,6 +45,9 @@ gui.add(options, "wireframe").onChange(function (e) {
   sphere.material.wireframe = e;
 });
 gui.add(options, "speed", 0, 0.1);
+gui.add(options, "angle", 0, 0.3);
+gui.add(options, "penumbra", 0, 0.3);
+gui.add(options, "intensity", 0, 0.3);
 
 //Tạo 1 BOX (vật thể hình hộp)
 const BoxGeometry = new THREE.BoxGeometry(1, 1, 1);
@@ -84,26 +90,35 @@ cube.rotation.x = 10;
 cube.rotation.y = 6;
 
 //Taọ môi  trường ánh sáng xung quanh( ánh sánh xung quanh tác động đến các đối tượng là như nhau và không thể tạo bóng vì nó không có hướng)
-const ambientLight = new THREE.AmbientLight(0x333333);
-scene.add(ambientLight);
-//Xác định hướng màu và độ tương phản của ánh sáng
-const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-directionalLight.position.set(-30, 40, 0);
-directionalLight.castShadow = true; //nguồn sáng chiếu xuống sphere, sphere đổ bóng xuống mặt phẳng
-directionalLight.shadow.camera.top = 12; //băng kích thước vùng đổ bóng của máy ảnh
-scene.add(directionalLight);
-//Khởi tạo đối tượng nguồn sáng, ta có thể duy chuyển nguồn sáng để tạo bóng, phải có đối tương Helper mới có thể điều chỉnh vị trí nguồn sáng được(directionalLight.position.set(-30, 40, 0);)
-const directionalLightHelper = new THREE.DirectionalLightHelper(
-  directionalLight,
-  5
-);
-scene.add(directionalLightHelper);
-
+// const ambientLight = new THREE.AmbientLight(0x333333);
+// scene.add(ambientLight);
+// //Xác định hướng màu và độ tương phản của ánh sáng
+// const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+// directionalLight.position.set(-30, 40, 0);
+// directionalLight.castShadow = true; //nguồn sáng chiếu xuống sphere, sphere đổ bóng xuống mặt phẳng
+// directionalLight.shadow.camera.top = 12; //băng kích thước vùng đổ bóng của máy ảnh
+// scene.add(directionalLight);
+// //Khởi tạo đối tượng nguồn sáng, ta có thể duy chuyển nguồn sáng để tạo bóng, phải có đối tương Helper mới có thể điều chỉnh vị trí nguồn sáng được(directionalLight.position.set(-30, 40, 0);)
+// const directionalLightHelper = new THREE.DirectionalLightHelper(
+//   directionalLight,
+//   5
+// );
+// scene.add(directionalLightHelper);
 //Camera hỗ trợ đỗ bóng, helper naỳ bẽ cho ta các đường sáng , giúp điều chỉnh ánh sáng trực quang hơn
-const directionalLightCameraShadow = new THREE.CameraHelper(
-  directionalLight.shadow.camera
-);
-scene.add(directionalLightCameraShadow);
+// const directionalLightCameraShadow = new THREE.CameraHelper(
+//   directionalLight.shadow.camera
+// );
+// scene.add(directionalLightCameraShadow);
+
+//Tạo nguồn ánh sách định hướng, nó giống như ánh sáng của đèn pin( tỏa ra hình non, diện tích sẽ nhở lại khi đưa lại gần và tỏa rộng ra khi đưa ra xa)
+const spotLight = new THREE.SpotLight(0xffffff);
+spotLight.position.set(-100, 100, 0);
+spotLight.castShadow = true;
+spotLight.angle = options.angle; // thu hẹp goc của nguồn sáng
+scene.add(spotLight);
+//Camera hỗ trợ đỗ bóng, helper naỳ bẽ cho ta các đường sáng , giúp điều chỉnh ánh sáng trực quang hơn
+const spotLightHelper = new THREE.SpotLightHelper(spotLight);
+scene.add(spotLightHelper);
 
 //tạo hành động nhảy lên cho sphere(khối cầu)
 let step = 0;
@@ -113,6 +128,13 @@ function animation(time) {
   cube.rotation.y = time / 1000;
   step += options.speed;
   sphere.position.y = 10 * Math.abs(Math.sin(step)); //Math.abs() lấy giá trị tuyệt đối - Math.sin()// [-1,1]
+
+  //cập nhập khi điều chỉnh nguồn sáng trong dat.gui
+  spotLight.angle = options.angle;
+  spotLight.penumbra = options.penumbra;
+  spotLight.intensity = options.intensity;
+  spotLightHelper.update();
+
   renderer.render(scene, camera);
 }
 
