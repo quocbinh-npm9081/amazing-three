@@ -52,6 +52,7 @@ const options = {
   angle: 0.1, // góc tới của anh sáng
   penumbra: 0.01,
   intensity: 1, // cường độ ánh sáng
+  gird: true,
 };
 
 gui.addColor(options, "sphereColor").onChange(function (e) {
@@ -59,6 +60,9 @@ gui.addColor(options, "sphereColor").onChange(function (e) {
 });
 gui.add(options, "wireframe").onChange(function (e) {
   sphere.material.wireframe = e;
+});
+gui.add(options, "gird").onChange(function (e) {
+  gridHelper.visible = e;
 });
 gui.add(options, "speed", 0, 0.1);
 gui.add(options, "angle", 0, 0.3);
@@ -122,6 +126,26 @@ const divisions = 10;
 //const gridHelper = new THREE.GridHelper(size, divisions); //kích thước (10) được chia làm 10 phần
 const gridHelper = new THREE.GridHelper(30); //kích thước 30 bằng kích thước của mặt phẳng (planeGeometry)
 scene.add(gridHelper);
+
+////Tạo 1 mặt phẳng với hình dạng khác nhau
+const plane2Geometry = new THREE.PlaneGeometry(10, 10, 10, 10);
+const plane2Material = new THREE.MeshStandardMaterial({
+  color: 0xffffff,
+  wireframe: true,
+});
+const plane2 = new THREE.Mesh(plane2Geometry, plane2Material);
+plane2.position.set(10, 10, 15);
+
+//thay đổi tọa độ cho các vertices (các điểm tạo nên 1 mặt phăng) vẽ làm mặt phẳng bị biến đạng
+//thay đổi tọa độ điểm đầu tiên của mặt phăng
+plane2.geometry.attributes.position.array[0] -= 10 * Math.random();
+plane2.geometry.attributes.position.array[1] -= 10 * Math.random();
+plane2.geometry.attributes.position.array[2] -= 10 * Math.random();
+//thay đỏi điểm cuối cùng của mặt phẳng
+const lastPointZ = plane2.geometry.attributes.position.array.length - 1;
+plane2.geometry.attributes.position.array[lastPointZ] -= 10 * Math.random();
+
+scene.add(plane2);
 
 //xoay cho Box quay
 cube.rotation.x = 10;
@@ -199,6 +223,14 @@ function animation(time) {
       intersects[i].object.rotation.y = time / 1000;
     }
   }
+
+  plane2.geometry.attributes.position.array[0] -= 10 * Math.random();
+  plane2.geometry.attributes.position.array[1] -= 10 * Math.random();
+  plane2.geometry.attributes.position.array[2] -= 10 * Math.random();
+  //thay đỏi điểm cuối cùng của mặt phẳng
+  plane2.geometry.attributes.position.array[lastPointZ] -= 10 * Math.random();
+  plane2.geometry.attributes.position.needsUpdate = true;
+
   renderer.render(scene, camera);
 }
 
