@@ -235,3 +235,10 @@ function animation(time) {
 }
 
 renderer.setAnimationLoop(animation);
+
+// Responsive canvas
+window.addEventListener("resize", function () {
+  camera.aspect = window.innerWidth / window.innerHeight; // Cập nhập lại camera khi window resize
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
